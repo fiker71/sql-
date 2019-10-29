@@ -1,17 +1,114 @@
---return total order by month
---source: https://stackoverflow.com/questions/11531785/how-to-query-group-by-month-in-a-year/11532489
+---COMPLETE THE DATA MODEL
+
+--create table for products 
+CREATE TABLE day_1.product
+(
+	product_id BIGINT NOT NULL,
+	product_name TEXT NOT NULL,
+    selling_price money NOT NULL,
+    cost_price money NOT NULL
+);
+
+ALTER TABLE day_1.product
+ADD CONSTRAINT product_id_pkey
+PRIMARY KEY (product_id);
+
+---THE SAME FOR OTHER TABLES 
+---The data model is given by default and the code export gives the following. 
+
+-- Exported from QuickDBD: https://www.quickdatabasediagrams.com/
+
+-- Link to schema: https://app.quickdatabasediagrams.com/#/d/hinlvl
+-- NOTE! If you have used non-SQL datatypes in your design, you will have to change these here.
+
+-- Modify this code to update the DB schema diagram.
+-- To reset the sample schema, replace everything with
+-- two dots ('..' - without quotes).
+
+CREATE TABLE "customer" (
+    "customer_id" bigint   NOT NULL,
+    "customer_name" text   NOT NULL,
+    "email" text   NOT NULL,
+    "phone_number" text   NOT NULL,
+    "address_line_1" text   NOT NULL,
+    "city" text   NOT NULL,
+    CONSTRAINT "pk_customer" PRIMARY KEY (
+        "customer_id"
+     )
+);
+
+CREATE TABLE "order" (
+    "order_id" bigint   NOT NULL,
+    "customer_id" bigint   NOT NULL,
+    "order_date" date   NOT NULL,
+    "total_amount" money   NOT NULL,
+    "order_status_id" smallint   NOT NULL,
+    CONSTRAINT "pk_order" PRIMARY KEY (
+        "order_id"
+     )
+);
+
+CREATE TABLE "order_line" (
+    "order_line_id" unknown   NOT NULL,
+    "order_id" unknown   NOT NULL,
+    "product_id" unknown   NOT NULL,
+    "quantity" unknown   NOT NULL,
+    CONSTRAINT "pk_order_line" PRIMARY KEY (
+        "order_line_id"
+     )
+);
+
+-- Table documentation comment 1 (try the PDF/RTF export)
+-- Table documentation comment 2
+CREATE TABLE "product" (
+    "product_id" unknown   NOT NULL,
+    -- Field documentation comment 1
+    -- Field documentation comment 2
+    -- Field documentation comment 3
+    "product_name" unknown   NOT NULL,
+    "selling_price" unknown   NOT NULL,
+    "cost_price" unknown   NOT NULL,
+    CONSTRAINT "pk_product" PRIMARY KEY (
+        "product_id"
+     )
+);
+
+CREATE TABLE "order_status" (
+    "order_status_id" unknown   NOT NULL,
+    "status_name" unknown   NOT NULL,
+    CONSTRAINT "pk_order_status" PRIMARY KEY (
+        "order_status_id"
+     )
+);
+
+ALTER TABLE "order" ADD CONSTRAINT "fk_order_customer_id" FOREIGN KEY("customer_id")
+REFERENCES "customer" ("customer_id");
+
+ALTER TABLE "order" ADD CONSTRAINT "fk_order_order_status_id" FOREIGN KEY("order_status_id")
+REFERENCES "order_status" ("order_status_id");
+
+ALTER TABLE "order_line" ADD CONSTRAINT "fk_order_line_order_id" FOREIGN KEY("order_id")
+REFERENCES "order" ("order_id");
+
+ALTER TABLE "order_line" ADD CONSTRAINT "fk_order_line_product_id" FOREIGN KEY("product_id")
+REFERENCES "product" ("product_id");
+
+
+----QUERY THE DATA MODEL 
+
+..Q.1 Return Total Order Amount by Month ( i.e Year_Month | Total_Order_Amount )
 
 --check table 
 SELECT * FROM day_1.order LIMIT 2;  
 
---sum by month 
+--Retrun total order by month  
 SELECT extract(MONTH FROM order_date) AS monthly,
        sum(total_amount)
 FROM day_1.ORDER
 GROUP BY extract(month FROM order_date)
 order by monthly;
 
-----however the above date format is not yyyy-mm
+----However the above date format is not yyyy-mm
 SELECT to_char(order_date, 'YYYY-MM'), sum(total_amount)
 FROM day_1.order
 GROUP BY to_char(order_date, 'YYYY-MM')
@@ -20,7 +117,9 @@ ORDER BY 1
  
 --Q.2. Return Total Order Amount by Month & Product (i.e Year_Month | Product_Name | Total_Order_Amount)
 
---first, we Join the order table with the prducts table using Order_ID
+--first, we inner Join the order table with the prducts table using Order_ID
+
+
 
 --Second, Group by product and month using total amount 
 
