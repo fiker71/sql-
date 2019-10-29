@@ -1,0 +1,37 @@
+--return total order by month
+--source: https://stackoverflow.com/questions/11531785/how-to-query-group-by-month-in-a-year/11532489
+
+--check table 
+SELECT * FROM day_1.order LIMIT 2;  
+
+--sum by month 
+SELECT extract(MONTH FROM order_date) AS monthly,
+       sum(total_amount)
+FROM day_1.ORDER
+GROUP BY extract(month FROM order_date)
+order by monthly;
+
+----however the above date format is not yyyy-mm
+SELECT to_char(order_date, 'YYYY-MM'), sum(total_amount)
+FROM day_1.order
+GROUP BY to_char(order_date, 'YYYY-MM')
+ORDER BY 1
+
+ 
+--Q.2. Return Total Order Amount by Month & Product (i.e Year_Month | Product_Name | Total_Order_Amount)
+
+--first, we Join the order table with the prducts table using Order_ID
+
+--Second, Group by product and month using total amount 
+
+
+--Return a List of Customers whose Orders that have not yet been dispatched (i.e Customer_Name | Date | Order_Amount)
+
+
+---check the content of the table with the head rows 
+SELECT * FROM day_1.order_status;
+
+SELECT * FROM day_1.order_line
+LIMIT 5;
+
+---
